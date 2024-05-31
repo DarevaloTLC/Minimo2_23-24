@@ -19,6 +19,7 @@ import edu.upc.dsa.kebabsimulator_android.models.API;
 import edu.upc.dsa.kebabsimulator_android.models.SharedPrefManager;
 import edu.upc.dsa.kebabsimulator_android.models.User;
 import edu.upc.dsa.kebabsimulator_android.models.Weapon;
+import edu.upc.dsa.kebabsimulator_android.models.FAQ;
 
 
 import org.json.JSONException;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         Button button = findViewById(R.id.boton);
         Button boton2 = findViewById(R.id.boton2);
         Button botonMensaje = findViewById(R.id.botonMensajes);
+        Button buttonFAQ = findViewById(R.id.buttonFAQ);
 
         progressBar.setVisibility(View.INVISIBLE);
 
@@ -157,6 +159,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        buttonFAQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FAQActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
 

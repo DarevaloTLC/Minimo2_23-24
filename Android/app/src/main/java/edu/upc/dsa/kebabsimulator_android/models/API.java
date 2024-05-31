@@ -34,6 +34,9 @@ public interface API {
     @GET("messages")
     Call<List<Message>> getMessages();
 
+    @GET("FAQs")
+    Call<List<FAQ>> getFAQs();
+
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

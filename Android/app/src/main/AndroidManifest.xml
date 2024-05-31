@@ -16,6 +16,11 @@
         android:theme="@style/Theme.KebabSimulator_Android"
         tools:targetApi="31">
         <activity
+            android:name=".item_faq"
+            android:exported="false"
+            android:label="@string/title_activity_item_faq"
+            android:theme="@style/Theme.KebabSimulator_Android" />
+        <activity
             android:name=".MessageActivity"
             android:exported="false" />
         <activity
@@ -35,12 +40,15 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".FormActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FAQActivity"
             android:exported="false" />
     </application>
 
