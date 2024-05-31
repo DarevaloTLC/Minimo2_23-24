@@ -44,4 +44,15 @@ public class FAQService {
         FAQ retfaq = this.fl.addFAQ(faq);
         return Response.status(201).entity(retfaq).build();
     }
+    @POST
+    @ApiOperation(value = "answer a FAQ", notes = "---")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successful", response = FAQ.class)
+    })
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response answerFAQ(@PathParam("id") String id, String answer) {
+        FAQ retfaq = this.fl.answerFAQ(id, answer);
+        return Response.status(201).entity(retfaq).build();
+    }
 }
