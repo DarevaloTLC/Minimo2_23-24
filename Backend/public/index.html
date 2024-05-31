@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kebab Simulator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap');
+
+        body {
+            background-color: #fbf1a9;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            font-family: 'Mouse Memoirs', sans-serif;
+            margin-top: 50px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .kebab-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="login.js"></script> <!-- Agregamos el script de login -->
+</head>
+<body>
+<h1>Kebab Simulator</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="https://st2.depositphotos.com/5963850/8765/v/950/depositphotos_87656788-stock-illustration-kebab-premium-with-man.jpg" alt="Kebab Image" class="kebab-image">
+        </div>
+        <div class="col-md-6">
+            <h2 id="form-title">Log In</h2>
+            <form id="login-form" action="" method="post" class="form-signin">
+                <input type="text" id="login-username" name="login-username" class="form-control form-control-sm" placeholder="Username" required autofocus>
+                <input type="password" id="login-password" name="login-password" class="form-control form-control-sm" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block btn-sm" type="submit">Sign in</button>
+            </form>
+            <!-- Opción para el inicio de sesión automático -->
+            <p id="auto-login-option" style="display: none;">If you want to login automatically, click <a href="#" id="auto-login-link">here</a>.</p>
+            <p id="toggle-form">Don't have an account? <a href="register.html">Create one!</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Login Exitoso -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Login Successful</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Login successful! You will be redirected.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="successModalButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Login Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="errorModalMessage">
+                Error message goes here.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function handleLogin(username, password) {
+        const url = '/dsaApp/users/login';
+        const data = {
+            userName: username,
+            password: password
+        };
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        try {
+            const response = await fetch(url, fetchOptions);
+            const result = await response.json();
+
+            if (result.message === "Login Successful") {
+                console.log('Login successful');
+                // Almacena el estado del usuario como autenticado en localStorage
+                localStorage.setItem('userStatus', 'loggedIn');
+                localStorage.setItem('username', username);
+                localStorage.setItem('password', password);
+
+                // Mostrar modal de éxito
+                $('#successModal').modal('show');
+                document.getElementById('successModalButton').addEventListener('click', function() {
+                    window.location.href = '/listaObjetos.html'; // Redirige a la página listaObjetos.html
+                });
+            } else {
+                // Si el mensaje no indica un inicio de sesión exitoso, lanza un error
+                throw new Error(result.message || 'Unknown login error');
+            }
+        } catch (error) {
+            console.error('Login Error:', error);
+            // Mostrar modal de error
+            document.getElementById('errorModalMessage').textContent = "Error: " + error.message;
+            $('#errorModal').modal('show');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var username = document.getElementById('login-username').value;
+            var password = document.getElementById('login-password').value;
+            handleLogin(username, password);
+        });
+
+        const userStatus = localStorage.getItem('userStatus');
+        const autoLoginShown = localStorage.getItem('autoLoginShown');
+
+        // Verifica si el usuario ya está autenticado y si hay credenciales almacenadas localmente
+        if (userStatus === 'loggedIn' && autoLoginShown !== 'true') {
+            // Si el usuario ha decidido registrarse nuevamente, muestra el mensaje de registro manualmente
+            const automaticLogin = confirm('You are already logged in. Do you want to log in automatically?');
+            if (automaticLogin) {
+                const storedUsername = localStorage.getItem('username');
+                const storedPassword = localStorage.getItem('password');
+                handleLogin(storedUsername, storedPassword);
+            } else {
+                // Si el usuario no ha decidido iniciar sesión automáticamente, establece la bandera para no mostrar la confirmación nuevamente
+                localStorage.setItem('autoLoginShown', 'true');
+                // Si el usuario no ha decidido iniciar sesion automaticamente se le envia a la pagina principal.
+                window.location.href = '/';
+            }
+        } else {
+            // Si el usuario no está autenticado, muestra la opción para el inicio de sesión automático
+            document.getElementById('auto-login-option').style.display = 'block';
+        }
+
+        // Establecer autoLoginShown a false después de 1 minuto (60000 ms)
+        setTimeout(() => {
+            localStorage.setItem('autoLoginShown', 'false');
+        }, 60000); // 1 minuto en milisegundos
+
+        // Opcionalmente, podrías permitir al usuario iniciar sesión automáticamente al hacer clic en el enlace
+        document.getElementById('auto-login-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            const storedUsername = localStorage.getItem('username');
+            const storedPassword = localStorage.getItem('password');
+            handleLogin(storedUsername, storedPassword);
+        });
+    });
+</script>
+</body>
+</html>
